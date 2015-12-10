@@ -24,8 +24,8 @@ img1= PhotoImage(file="images/header1.gif")
 img2= PhotoImage(file="images/header2.gif")
 img3= PhotoImage(file="images/header3.gif")
 toptext = Label(bannerframe, image= img1, justify= CENTER)
-toptext2 =  Label(bannerframe, image= img2, justify= CENTER)
-toptext3 =  Label(bannerframe, image= img3, justify= CENTER)
+toptext2 = Label(bannerframe, image= img2, justify= CENTER)
+toptext3 = Label(bannerframe, image= img3, justify= CENTER)
 toptext.pack()
 toptext2.pack()
 toptext3.pack()
@@ -60,8 +60,6 @@ endtext.set("This project was built using Python for our EECE 507: \n Mathematic
 
 toptext1 =  Label(info_main_frame, relief=GROOVE, bg= "#90DCF5", textvariable=endtext, justify= CENTER)
 toptext1.pack()
-
-
 
 #textframe = Frame(mainframe, width=450, height= 30)
 #textframe.grid(row=0, column=1)
