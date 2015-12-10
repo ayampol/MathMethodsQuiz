@@ -15,6 +15,14 @@ class LogicQuestion(object):
 	self.chosen_adj2 = []
 	self.chosen_adj = random.choice(adjectives)
 	self.chosen_adj2 = random.choice(adjectives)
+	
+    def get_question(self):
+        QUESTION = [(self._generate_question()),
+                    (self._generate_answer(),'correct'),
+                    ('wrong answer','no'),
+                    ('wrong answer','bad'),
+                    ('wrong answer','wrong')]
+        return QUESTION
         
     def _generate_question(self):
         #Choose a question type
@@ -34,7 +42,6 @@ class LogicQuestion(object):
 	self.answer= self.answer.replace('$adjective1', self.chosen_adj)
 	self.answer= self.answer.replace('$adjective2', self.chosen_adj2)
 	return self.answer
-        return 0;
         
     def _choose_labels(self):
 	self.format = self.format.replace('$adjective2',self.chosen_adj2)
@@ -51,5 +58,7 @@ adjectives = ["Red","Sunny","Tepid","Green","Angry","Cautious","Raining", "Skyin
 types = {1:"inverse", 2: "converse", 3:"contrapositive"}
 
 logic_question = LogicQuestion(nouns,adjectives,types,forms)
-print logic_question._generate_question()
-print logic_question._generate_answer()
+#print logic_question._generate_question()
+#print logic_question._generate_answer()
+
+print logic_question.get_question();

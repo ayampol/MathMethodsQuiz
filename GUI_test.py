@@ -1,6 +1,8 @@
 #This code is based on http://pythonprogramming.net/change-show-new-frame-tkinter/
 
 from Tkinter import *
+from QuizState import QuizState
+from LogicQuestion import LogicQuestion
 
 LARGE_FONT= ("Consolas", 12)
 
@@ -11,13 +13,21 @@ class FrameWarden(Tk):
         self.title('Math Methods Project by Jose and Alena');
         
         container = Frame(self)
+        self.tainercon = container;
         container.pack(side="top", fill="both", expand = True)
         container.grid_rowconfigure(0, weight=1)
         container.grid_columnconfigure(0, weight=1)
 
         self.frames = {}
+        
+        forms = {1:"If $noun is $adjective1 then it is $adjective2", 2: "$adjective1 implies $adjective2" , 3: "$noun is $adjective1 if it is $adjective2", 4:"If $noun is not $adjective1 then it is not $adjective2", 5: "Not $adjective1 implies not $adjective2", 6: "$noun is $adjective1 if it is $adjective2", 7:"If $noun is $adjective2 then it is $adjective1", 8:"$adjective2 implies $adjective1", 9:"$noun is $adjective2 if it is $adjective1", 10:"If $noun is not $adjective2 then it is not $adjective1", 11:"Not $adjective2 implies not $adjective1", 12:"$noun is not $adjective2 if it is not $adjective1"}
+        nouns = ["Duck", "Cat","Dog","Elephant", "Pidgeon", "Mouse", "Lion", "Person", "Bearcat", "Horse", "Pig", "Scorpion", "Ant", "Jaguar", "Giraffe"]
+        adjectives = ["Red","Sunny","Tepid","Green","Angry","Cautious","Raining", "Skiing", "Jumping", "Hiking", "Swimming", "Racing"]
+        types = {1:"inverse", 2: "converse", 3:"contrapositive"}
 
-        for F in (StartPage, InfoPage, QuizPage, GamePage):
+        self.logic_question = LogicQuestion(nouns,adjectives,types,forms)        
+        
+        for F in (StartPage, InfoPage, QuizPage, GamePage, QuizQuestion):
 
             frame = F(container, self)
 
@@ -27,8 +37,14 @@ class FrameWarden(Tk):
 
         self.show_frame(StartPage)
 
-    def show_frame(self, cont):
-
+    def show_frame(self, cont, *arguments, **keywords):
+        if cont == QuizPage:
+            self.quizstate = QuizState();
+            self.quizstate.check_answer(keywords.get('choice'))
+        elif cont == QuizQuestion:
+            self.quizstate.check_answer(keywords.get('choice'))
+            self.frames[cont] = QuizQuestion(self.tainercon,self);
+        
         frame = self.frames[cont]
         frame.tkraise()
         
@@ -90,10 +106,26 @@ class QuizPage( Frame):
 
     def __init__(self, parent, controller):
         Frame.__init__(self, parent)
-        label =  Label(self, text="Quiz questions!! \n Or page two, actually.", font=LARGE_FONT)
+        label =  Label(self, text="Start Of Quiz", font=LARGE_FONT)
         label.pack(pady=10,padx=10)
-
-        quizbutton = Button(self, text="Next Question")
+        
+        current_question = controller.logic_question.get_question();
+        
+        #Get quiz question
+        question_label = Label(self, text=current_question[0], font=LARGE_FONT);
+        question_label.pack(pady=50,padx=50);
+        
+        #Get quiz answers
+        v = StringVar();
+        v.set('cat')
+        
+        Radiobutton(self, text=current_question[1][0], variable=v, value=current_question[1][1]).pack(side='top')
+        Radiobutton(self, text=current_question[2][0], variable=v, value=current_question[2][1]).pack(side='top')
+        Radiobutton(self, text=current_question[3][0], variable=v, value=current_question[3][1]).pack(side='top')
+        Radiobutton(self, text=current_question[4][0], variable=v, value=current_question[4][1]).pack(side='top')
+        
+        quizbutton = Button(self, text="Next Question", 
+                            command=lambda: controller.show_frame(QuizQuestion,choice=v.get()))
         quizbutton.pack(side = TOP)
         
         button1 =  Button(self, text="Back to Home",
@@ -103,6 +135,34 @@ class QuizPage( Frame):
         button2 =  Button(self, text="Info",
                             command=lambda: controller.show_frame(InfoPage))
         button2.pack(side = BOTTOM)
+        
+    def _quiz_update(self,controller):
+        quiz_state.update_question_total;
+        controller.show_frame(QuizQuestion)
+        
+class QuizQuestion(Frame):
+    def __init__(self,parent,controller):
+        Frame.__init__(self,parent)
+        
+        current_question = controller.logic_question.get_question();
+        
+        #Get quiz question
+        question_label = Label(self, text=current_question[0], font=LARGE_FONT);
+        question_label.pack(pady=50,padx=50);
+        
+        #Get quiz answers
+        v = StringVar();
+        v.set('cat')
+        
+        Radiobutton(self, text=current_question[1][0], variable=v, value=current_question[1][1]).pack(side='top')
+        Radiobutton(self, text=current_question[2][0], variable=v, value=current_question[2][1]).pack(side='top')
+        Radiobutton(self, text=current_question[3][0], variable=v, value=current_question[3][1]).pack(side='top')
+        Radiobutton(self, text=current_question[4][0], variable=v, value=current_question[4][1]).pack(side='top')
+            
+        quizbutton = Button(self, text="Next Question", 
+                            command=lambda:controller.show_frame(QuizQuestion,choice=v.get()))
+        quizbutton.pack(side = TOP)
+        
         
 class GamePage(Frame):
     def __init__(self,parent,controller):
