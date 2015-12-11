@@ -20,8 +20,7 @@ class QuizState(object):
     def _wronganswer(self):
         self.score['wrong'] = self.score['wrong'] + 1;
         
-    def get_result(self):
-        result = 'You got ' + self.score['correct'] + 'out of ' + self.total_questions + ' correct. '
+    def get_result(self): 
+        result = 'You got ' + str(self.score['correct']) + ' out of ' + str(self.total_questions) + ' correct. '
         return result;
         
-            

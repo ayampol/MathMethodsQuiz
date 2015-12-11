@@ -13,8 +13,6 @@ class LogicQuestion(object):
         self.chosen_nouns = []
 	self.chosen_adj = []
 	self.chosen_adj2 = []
-	self.chosen_adj = random.choice(adjectives)
-	self.chosen_adj2 = random.choice(adjectives)
 	
     def get_question(self):
         QUESTION = [(self._generate_question()),
@@ -39,13 +37,15 @@ class LogicQuestion(object):
     def _generate_answer(self):
 	self.answer = self.q_forms[(self.answertype * 3) + self.x];
 	self.answer = self.answer.replace('$noun',self.chosen_nouns[-1],1)
-	self.answer= self.answer.replace('$adjective1', self.chosen_adj)
-	self.answer= self.answer.replace('$adjective2', self.chosen_adj2)
+	self.answer= self.answer.replace('$adjective1', self.chosen_adj[-1])
+	self.answer= self.answer.replace('$adjective2', self.chosen_adj2[-1])
 	return self.answer
         
     def _choose_labels(self):
-	self.format = self.format.replace('$adjective2',self.chosen_adj2)
-	self.format = self.format.replace('$adjective1',self.chosen_adj)
+        self.chosen_adj.append(random.choice(self.adjectives))
+	self.chosen_adj2.append(random.choice(self.adjectives))
+	self.format = self.format.replace('$adjective2',self.chosen_adj2[-1])
+	self.format = self.format.replace('$adjective1',self.chosen_adj[-1])
 	
         self.chosen_nouns.append(random.choice(self.nouns));
         self.format = self.format.replace('$noun',self.chosen_nouns[-1],1)
@@ -61,4 +61,3 @@ logic_question = LogicQuestion(nouns,adjectives,types,forms)
 #print logic_question._generate_question()
 #print logic_question._generate_answer()
 
-print logic_question.get_question();

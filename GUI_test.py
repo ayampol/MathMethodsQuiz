@@ -29,10 +29,8 @@ class FrameWarden(Tk):
         
         for F in (StartPage, InfoPage, QuizPage, GamePage, QuizQuestion):
 
-            frame = F(container, self)
-
+            frame = F(self.tainercon, self)
             self.frames[F] = frame
-
             frame.grid(row=0, column=0, sticky="nsew")
 
         self.show_frame(StartPage)
@@ -43,8 +41,10 @@ class FrameWarden(Tk):
             self.quizstate.check_answer(keywords.get('choice'))
         elif cont == QuizQuestion:
             self.quizstate.check_answer(keywords.get('choice'))
-            self.frames[cont] = QuizQuestion(self.tainercon,self);
-        
+            self.frames[QuizQuestion].refresh_question()
+        if keywords.get('endquiz') == 'yes':
+            print self.quizstate.get_result();
+                
         frame = self.frames[cont]
         frame.tkraise()
         
@@ -77,6 +77,10 @@ class StartPage(Frame):
         button3 =  Button(self, text="Play A Game",
                             command=lambda: controller.show_frame(QuizPage))
         button3.pack()
+        
+        button4 = Button(self, text="Quit",
+                            command=lambda: controller.destroy())
+        button4.pack()
          
         botinfo = StringVar();
         botinfo.set("This project was built using Python for our EECE 507: \n Mathematical Methods for Computer Engineers class. The code \n was designed and written by Alena Yampolskaya and Jose Duque \n for consideration by Professor Linke Guo")
@@ -109,20 +113,18 @@ class QuizPage( Frame):
         label =  Label(self, text="Start Of Quiz", font=LARGE_FONT)
         label.pack(pady=10,padx=10)
         
-        current_question = controller.logic_question.get_question();
+        self.current_question = controller.logic_question.get_question();
         
         #Get quiz question
-        question_label = Label(self, text=current_question[0], font=LARGE_FONT);
+        question_label = Label(self, text=self.current_question[0], font=LARGE_FONT);
         question_label.pack(pady=50,padx=50);
         
         #Get quiz answers
         v = StringVar();
         v.set('cat')
         
-        Radiobutton(self, text=current_question[1][0], variable=v, value=current_question[1][1]).pack(side='top')
-        Radiobutton(self, text=current_question[2][0], variable=v, value=current_question[2][1]).pack(side='top')
-        Radiobutton(self, text=current_question[3][0], variable=v, value=current_question[3][1]).pack(side='top')
-        Radiobutton(self, text=current_question[4][0], variable=v, value=current_question[4][1]).pack(side='top')
+        for x in range(1,5):
+            Radiobutton(self, text=self.current_question[x][0], variable=v, value=self.current_question[x][1]).pack(side='top')
         
         quizbutton = Button(self, text="Next Question", 
                             command=lambda: controller.show_frame(QuizQuestion,choice=v.get()))
@@ -138,30 +140,54 @@ class QuizPage( Frame):
         
     def _quiz_update(self,controller):
         quiz_state.update_question_total;
-        controller.show_frame(QuizQuestion)
         
 class QuizQuestion(Frame):
     def __init__(self,parent,controller):
         Frame.__init__(self,parent)
         
-        current_question = controller.logic_question.get_question();
+        self.current_question = controller.logic_question.get_question();
+        self.logic_question = controller.logic_question;
         
         #Get quiz question
-        question_label = Label(self, text=current_question[0], font=LARGE_FONT);
+        self.question_text = StringVar();
+        self.question_text.set(self.current_question[0]);
+        
+        question_label = Label(self, textvariable=self.question_text, font=LARGE_FONT);
         question_label.pack(pady=50,padx=50);
         
         #Get quiz answers
-        v = StringVar();
-        v.set('cat')
+        self.v = StringVar();
+        self.v.set('cat')
         
-        Radiobutton(self, text=current_question[1][0], variable=v, value=current_question[1][1]).pack(side='top')
-        Radiobutton(self, text=current_question[2][0], variable=v, value=current_question[2][1]).pack(side='top')
-        Radiobutton(self, text=current_question[3][0], variable=v, value=current_question[3][1]).pack(side='top')
-        Radiobutton(self, text=current_question[4][0], variable=v, value=current_question[4][1]).pack(side='top')
+        self.answer_text = [];
+        self.answer_value = [];
+        
+        self.right_answer = StringVar();
+        self.right_value = StringVar();
+        
+        self.right_answer.set(self.current_question[1][0]);
+        self.right_value.set(self.current_question[1][1]);
+        
+        #for x in range(0,4):
+               # Radiobutton(self, textvariable=self.answer_text[x], variable=self.v, value=self.answer_value[x]).pack(side='top')
+        Radiobutton(self, textvariable=self.right_answer, variable=self.v, value=self.right_value).pack(side='top')
             
         quizbutton = Button(self, text="Next Question", 
-                            command=lambda:controller.show_frame(QuizQuestion,choice=v.get()))
+                            command=lambda:controller.show_frame(QuizQuestion,choice=self.v.get()))
         quizbutton.pack(side = TOP)
+        
+        endbutton = Button(self,text="End Quiz",
+                            command=lambda:controller.show_frame(StartPage,endquiz='yes'))
+        endbutton.pack();
+        
+    def refresh_question(self):
+        self.current_question = self.logic_question.get_question(); 
+        self.question_text.set(self.current_question[0]);
+        
+        self.right_answer.set(self.current_question[1][0]);
+        self.right_value.set(self.current_question[1][1]);
+        
+        self.v.set('new');
         
         
 class GamePage(Frame):
