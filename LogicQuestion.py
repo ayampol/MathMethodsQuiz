@@ -34,7 +34,27 @@ class LogicQuestion(object):
 	self.answer= self.answer.replace('$adjective1', self.chosen_adj)
 	self.answer= self.answer.replace('$adjective2', self.chosen_adj2)
 	return self.answer
-        return 0;
+
+    def _generate_wrong_answers(self):
+	i = 0
+	for i in range(1, 3):
+		self.wronganswer1 = self.q_forms[(i * 3) + self.x];
+			if (self.wronganswer1 != self.answer):
+				break
+	for i in range(1, 3):
+		self.wronganswer2 = self.q_forms[(i * 3) + self.x];
+			if ((self.wronganswer2 != self.answer) && (self.wronganswer2 != self.wronganswer1)):
+				break
+	while(1):
+		i = i+1;
+		self.wronganswer3 = self.q_forms[i];
+		if ((self.wronganswer3 != self.answer) && ((self.wronganswer3 != self.wronganswer1) && (self.wronganswer3 != self.wronganswer2)):
+				break
+
+	while ((self.wronganswer1 != self.answer) && self.wronganswer1 != self.wronganswer2)
+		self.wronganswer1 = self.q_forms[(self.answertype * 3) + self.x];
+
+	return wronganswer1, wronganswer2, wronganswer3
         
     def _choose_labels(self):
 	self.format = self.format.replace('$adjective2',self.chosen_adj2)
