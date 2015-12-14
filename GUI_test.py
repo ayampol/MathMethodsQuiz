@@ -1,6 +1,8 @@
 from Tkinter import *
 from QuizState import QuizState
 from LogicQuestion import LogicQuestion
+import itertools
+import random
 
 LARGE_FONT = ("Consolas", 12)
 
@@ -154,18 +156,22 @@ class QuizQuestion(Frame):
         self.v = StringVar();
         self.v.set('cat')
         
-        self.answer_text = [];
-        self.answer_value = [];
+        self.answers = [StringVar(), StringVar(), StringVar(), StringVar()];
+        self.values = ['','','',''];
         
-        self.right_answer = StringVar();
-        self.right_value = StringVar();
+        self.ans_vals = [[StringVar(),''] for _ in range(0,4)]
         
-        self.right_answer.set(self.current_question[1][0]);
-        self.right_value.set(self.current_question[1][1]);
+        self.lst = [0,1,2,3];
+        self.lst = set(itertools.permutations(list(self.lst))).pop();
+
+        for x in range(1,5):
+            self.ans_vals[x - 2][0].set(self.current_question[x][0]);
+            self.ans_vals[x-2][1] = self.current_question[x][1];
+            
+        self.ans_vals = random.choice(list(itertools.permutations(list(self.ans_vals))));         
         
-        #for x in range(0,4):
-               # Radiobutton(self, textvariable=self.answer_text[x], variable=self.v, value=self.answer_value[x]).pack(side='top')
-        Radiobutton(self, textvariable=self.right_answer, variable=self.v, value=self.right_value.get()).pack(side='top')
+        for x in self.lst:
+            Radiobutton(self, textvariable=self.ans_vals[x][0], variable=self.v,value=self.ans_vals[x][1]).pack(side = 'top')
             
         quizbutton = Button(self, text="Next Question", 
                             command=lambda:controller.show_frame(QuizQuestion,choice=self.v.get()))
@@ -179,8 +185,13 @@ class QuizQuestion(Frame):
         self.current_question = self.logic_question.get_question(); 
         self.question_text.set(self.current_question[0]);
         
-        self.right_answer.set(self.current_question[1][0]);
-        self.right_value.set(self.current_question[1][1]);
+        self.lst = set(itertools.permutations(list(self.lst))).pop();
+        
+        for x in self.lst:
+            self.ans_vals[x - 2][0].set(self.current_question[x][0]);
+            self.ans_vals[x-2][1] = self.current_question[x][1];  
+        
+        self.ans_vals = random.choice(list(itertools.permutations(list(self.ans_vals))));  
         
         self.v.set('new');
         
