@@ -2,7 +2,7 @@ class QuizState(object):
     def __init__(self):
         self.type = type;
         self.score = {'correct': 0, 'wrong': 0};
-        self.total_questions = 0;
+        self.total_questions = -1;
 
     def check_answer(self,choice):
         self._update_question_total();

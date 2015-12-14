@@ -136,9 +136,6 @@ class QuizPage( Frame):
                             command=lambda: controller.show_frame(InfoPage))
         button2.pack(side = BOTTOM)
         
-    def _quiz_update(self,controller):
-        quiz_state.update_question_total;
-        
 class QuizQuestion(Frame):
     def __init__(self,parent,controller):
         Frame.__init__(self,parent)
@@ -168,7 +165,7 @@ class QuizQuestion(Frame):
         
         #for x in range(0,4):
                # Radiobutton(self, textvariable=self.answer_text[x], variable=self.v, value=self.answer_value[x]).pack(side='top')
-        Radiobutton(self, textvariable=self.right_answer, variable=self.v, value=self.right_value).pack(side='top')
+        Radiobutton(self, textvariable=self.right_answer, variable=self.v, value=self.right_value.get()).pack(side='top')
             
         quizbutton = Button(self, text="Next Question", 
                             command=lambda:controller.show_frame(QuizQuestion,choice=self.v.get()))
