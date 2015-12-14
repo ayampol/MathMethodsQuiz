@@ -1,6 +1,4 @@
 from Tkinter import *
-from string import Template
-import math
 import random
 
 class LogicQuestion(object):
@@ -44,20 +42,20 @@ class LogicQuestion(object):
     def _generate_wrong_answers(self):
 	i = 0
 	for i in range(1, 3):
-		self.wronganswer1 = self.q_forms[(i * 3) + self.x];
-			if (self.wronganswer1 != self.answer):
+	       self.wronganswer1 = self.q_forms[(i * 3) + self.x];
+	       if (self.wronganswer1 != self.answer):
 				break
 	for i in range(1, 3):
-		self.wronganswer2 = self.q_forms[(i * 3) + self.x];
-			if ((self.wronganswer2 != self.answer) && (self.wronganswer2 != self.wronganswer1)):
+	       self.wronganswer2 = self.q_forms[(i * 3) + self.x];
+	       if ((self.wronganswer2 != self.answer) and (self.wronganswer2 != self.wronganswer1)):
 				break
 	while(1):
 		i = i+1;
 		self.wronganswer3 = self.q_forms[i];
-		if ((self.wronganswer3 != self.answer) && ((self.wronganswer3 != self.wronganswer1) && (self.wronganswer3 != self.wronganswer2)):
+		if ((self.wronganswer3 != self.answer) and (self.wronganswer3 != self.wronganswer1) and (self.wronganswer3 != self.wronganswer2)):
 				break
 
-	while ((self.wronganswer1 != self.answer) && self.wronganswer1 != self.wronganswer2)
+	while ((self.wronganswer1 != self.answer) and self.wronganswer1 != self.wronganswer2):
 		self.wronganswer1 = self.q_forms[(self.answertype * 3) + self.x];
 
 	return wronganswer1, wronganswer2, wronganswer3

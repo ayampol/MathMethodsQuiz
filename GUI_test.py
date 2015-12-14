@@ -1,10 +1,8 @@
-#This code is based on http://pythonprogramming.net/change-show-new-frame-tkinter/
-
 from Tkinter import *
 from QuizState import QuizState
 from LogicQuestion import LogicQuestion
 
-LARGE_FONT= ("Consolas", 12)
+LARGE_FONT = ("Consolas", 12)
 
 class FrameWarden(Tk):
 
