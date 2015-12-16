@@ -11,6 +11,15 @@ class PermutationQuestion(object):
         self.chosen_type = random.randint(1, (len(self.q_questions)))
 	self.chosen_var_n = chr(random.randint(6,9)+48)
 	self.chosen_var_r = chr(random.randint(0,6)+48)
+
+    def get_question(self):
+        QUESTION = [(self._generate_question()),
+                    (self._generate_answer(),'correct'),
+		    (self.generate_wrong_answer(),
+                    ('wrong answer','no'),
+                    ('wrong answer','bad'),
+                    ('wrong answer','wrong')]
+        return QUESTION
         
     def _generate_question(self):
 	self.q_chosen_question = self.q_questions[self.chosen_type]
