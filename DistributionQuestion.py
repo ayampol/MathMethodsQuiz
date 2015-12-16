@@ -6,7 +6,6 @@ import random
 class DistributionQuestion(object):
     
     def __init__(self, q_answer, q_questions):
-	self.
         self.q_answer = q_answer
         self.q_questions = q_questions
         self.chosen_type = random.randint(1, (len(self.q_questions)))
@@ -14,14 +13,17 @@ class DistributionQuestion(object):
 	self.chosen_var_r = random.randint(1,5)
 	self.chosen_var_rchar= chr(self.chosen_var_r +48)
 	self.chosen_var_nchar= chr(self.chosen_var_n +48)
-
+	
     def get_question(self):
+        self._generate_answer()
+        self._generate_wrong_answers()
+        
         QUESTION = [(self._generate_question()),
-                    (self._generate_answer(),'correct'),
-		    (self.generate_wrong_answer(),
-                    ('wrong answer','no'),
-                    ('wrong answer','bad'),
-                    ('wrong answer','wrong')]
+                    (self.answer,'correct'),
+                    (self.wronganswer1,'no'),
+                    (self.wronganswer2,'bad'),
+                    (self.wronganswer2,'wrong')]
+
         return QUESTION
         
     def _generate_question(self):

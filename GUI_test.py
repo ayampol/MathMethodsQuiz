@@ -3,6 +3,7 @@ from QuizState import QuizState
 from LogicQuestion import LogicQuestion
 import itertools
 import random
+import tkMessageBox
 
 LARGE_FONT = ("Consolas", 12)
 
@@ -38,11 +39,12 @@ class FrameWarden(Tk):
     def show_frame(self, cont, *arguments, **keywords):
         if cont == QuizPage:
             self.quizstate = QuizState();
-            self.quizstate.check_answer(keywords.get('choice'))
+            self.quizstate.check_answer(keywords.get('choice'),keywords.get('question'))
         elif cont == QuizQuestion:
-            self.quizstate.check_answer(keywords.get('choice'))
+            self.quizstate.check_answer(keywords.get('choice'),keywords.get('question'))
             self.frames[QuizQuestion].refresh_question()
         if keywords.get('endquiz') == 'yes':
+            tkMessageBox.showinfo("Your Results",self.quizstate.get_result())
             print self.quizstate.get_result();
                 
         frame = self.frames[cont]
@@ -112,7 +114,7 @@ class QuizPage( Frame):
         Frame.__init__(self, parent)
         label =  Label(self, text="Start Of Quiz", font=LARGE_FONT)
         label.pack(pady=10,padx=10)
-        
+        #self._generate_question()
         self.current_question = controller.logic_question.get_question();
         
         #Get quiz question
@@ -127,7 +129,7 @@ class QuizPage( Frame):
             Radiobutton(self, text=self.current_question[x][0], variable=v, value=self.current_question[x][1]).pack(side='top')
         
         quizbutton = Button(self, text="Next Question", 
-                            command=lambda: controller.show_frame(QuizQuestion,choice=v.get()))
+                            command=lambda: controller.show_frame(QuizQuestion,choice=v.get(),question=self.current_question))
         quizbutton.pack(side = TOP)
         
         button1 =  Button(self, text="Back to Home",
@@ -144,6 +146,8 @@ class QuizQuestion(Frame):
         
         self.current_question = controller.logic_question.get_question();
         self.logic_question = controller.logic_question;
+        
+        print(self.current_question)
         
         #Get quiz question
         self.question_text = StringVar();
@@ -174,7 +178,7 @@ class QuizQuestion(Frame):
             Radiobutton(self, textvariable=self.ans_vals[x][0], variable=self.v,value=self.ans_vals[x][1]).pack(side = 'top')
             
         quizbutton = Button(self, text="Next Question", 
-                            command=lambda:controller.show_frame(QuizQuestion,choice=self.v.get()))
+                            command=lambda:controller.show_frame(QuizQuestion,choice=self.v.get(),question=self.current_question))
         quizbutton.pack(side = TOP)
         
         endbutton = Button(self,text="End Quiz",
