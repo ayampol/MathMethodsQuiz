@@ -6,6 +6,7 @@ import random
 class DistributionQuestion(object):
     
     def __init__(self, q_answer, q_questions):
+	self.
         self.q_answer = q_answer
         self.q_questions = q_questions
         self.chosen_type = random.randint(1, (len(self.q_questions)))
