@@ -3,9 +3,12 @@ class QuizState(object):
         self.type = type;
         self.score = {'correct': 0, 'wrong': 0};
         self.total_questions = -1;
+        self.questions_so_far = [];
+        self.answers_so_far = [];
 
-    def check_answer(self,choice):
+    def check_answer(self,choice,question_blob):
         self._update_question_total();
+        self.questions_so_far.append(question_blob);
         if (choice == 'correct'):
             self._rightanswer();
         else:
