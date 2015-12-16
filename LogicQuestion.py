@@ -40,9 +40,6 @@ class LogicQuestion(object):
         
     def _generate_answer(self):
 	self.answer = self.q_forms[(self.answertype * 3) + self.x];
-	self.answer = self.answer.replace('$noun',self.chosen_nouns[-1],1)
-	self.answer= self.answer.replace('$adjective1', self.chosen_adj[-1])
-	self.answer= self.answer.replace('$adjective2', self.chosen_adj2[-1])
 	return self.answer
 
     def _generate_wrong_answers(self):
@@ -83,6 +80,9 @@ class LogicQuestion(object):
                 x = getattr(self,i)
                 #print x.replace('$adjective2',self.chosen_adj2[-1]).replace('$adjective1',self.chosen_adj[-1]).replace('$noun',self.chosen_nouns[-1],1)
                 setattr(self, i, x.replace('$adjective2',self.chosen_adj2[-1]).replace('$adjective1',self.chosen_adj[-1]).replace('$noun',self.chosen_nouns[-1],1))      
+	self.answer = self.answer.replace('$noun',self.chosen_nouns[-1],1)
+	self.answer= self.answer.replace('$adjective1', self.chosen_adj[-1])
+	self.answer= self.answer.replace('$adjective2', self.chosen_adj2[-1])
 
 
 # Normal, inverse, converse, contrapositive
