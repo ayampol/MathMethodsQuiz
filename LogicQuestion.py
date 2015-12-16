@@ -13,11 +13,14 @@ class LogicQuestion(object):
 	self.chosen_adj2 = []
 	
     def get_question(self):
+        self._generate_answer()
+        self._generate_wrong_answers()
+        
         QUESTION = [(self._generate_question()),
-                    (self._generate_answer(),'correct'),
-                    ('wrong answer','no'),
-                    ('wrong answer','bad'),
-                    ('wrong answer','wrong')]
+                    (self.answer,'correct'),
+                    (self.wronganswer1,'no'),
+                    (self.wronganswer2,'bad'),
+                    (self.wronganswer2,'wrong')]
         return QUESTION
         
     def _generate_question(self):
@@ -56,7 +59,8 @@ class LogicQuestion(object):
 		if ((self.wronganswer3 != self.answer) and (self.wronganswer3 != self.wronganswer1) and (self.wronganswer3 != self.wronganswer2)):
 				break
 
-	return wronganswer1, wronganswer2, wronganswer3
+	return self.wronganswer1, self.wronganswer2, self.wronganswer3
+	
         
     def _choose_labels(self):
         self.chosen_adj.append(random.choice(self.adjectives))
@@ -75,6 +79,7 @@ adjectives = ["Red","Sunny","Tepid","Green","Angry","Cautious","Raining", "Skyin
 types = {1:"inverse", 2: "converse", 3:"contrapositive"}
 
 logic_question = LogicQuestion(nouns,adjectives,types,forms)
-#print logic_question._generate_question()
-#print logic_question._generate_answer()
+print logic_question._generate_question()
+print logic_question._generate_answer()
+print logic_question._generate_wrong_answers()
 

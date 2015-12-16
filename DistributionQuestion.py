@@ -14,6 +14,17 @@ class DistributionQuestion(object):
 	self.chosen_var_r = random.randint(1,5)
 	self.chosen_var_rchar= chr(self.chosen_var_r +48)
 	self.chosen_var_nchar= chr(self.chosen_var_n +48)
+	
+    def get_question(self):
+        self._generate_answer()
+        self._generate_wrong_answers()
+        
+        QUESTION = [(self._generate_question()),
+                    (self.answer,'correct'),
+                    (self.wronganswer1,'no'),
+                    (self.wronganswer2,'bad'),
+                    (self.wronganswer2,'wrong')]
+        return QUESTION
         
     def _generate_question(self):
 	self.q_chosen_question = self.q_questions[self.chosen_type]

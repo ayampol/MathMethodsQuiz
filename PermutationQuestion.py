@@ -12,6 +12,17 @@ class PermutationQuestion(object):
 	self.chosen_var_n = chr(random.randint(6,9)+48)
 	self.chosen_var_r = chr(random.randint(0,6)+48)
         
+    def get_question(self):
+        self._generate_answer()
+        self._generate_wrong_answers()
+        
+        QUESTION = [(self._generate_question()),
+                    (self.answer,'correct'),
+                    (self.wronganswer1,'no'),
+                    (self.wronganswer2,'bad'),
+                    (self.wronganswer2,'wrong')]
+        return QUESTION
+        
     def _generate_question(self):
 	self.q_chosen_question = self.q_questions[self.chosen_type]
 	if self.chosen_type == 2 or self.chosen_type == 7 :
