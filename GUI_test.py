@@ -21,6 +21,8 @@ class FrameWarden(Tk):
 
         self.frames = {}
         
+        self.check_string = [];
+        
         forms = {1:"If $noun is $adjective1 then it is $adjective2", 2: "$adjective1 implies $adjective2" , 3: "$noun is $adjective1 if it is $adjective2", 4:"If $noun is not $adjective1 then it is not $adjective2", 5: "Not $adjective1 implies not $adjective2", 6: "$noun is $adjective1 if it is $adjective2", 7:"If $noun is $adjective2 then it is $adjective1", 8:"$adjective2 implies $adjective1", 9:"$noun is $adjective2 if it is $adjective1", 10:"If $noun is not $adjective2 then it is not $adjective1", 11:"Not $adjective2 implies not $adjective1", 12:"$noun is not $adjective2 if it is not $adjective1"}
         nouns = ["Duck", "Cat","Dog","Elephant", "Pidgeon", "Mouse", "Lion", "Person", "Bearcat", "Horse", "Pig", "Scorpion", "Ant", "Jaguar", "Giraffe"]
         adjectives = ["Red","Sunny","Tepid","Green","Angry","Cautious","Raining", "Skiing", "Jumping", "Hiking", "Swimming", "Racing"]
@@ -40,12 +42,16 @@ class FrameWarden(Tk):
         if cont == QuizPage:
             self.quizstate = QuizState();
             self.quizstate.check_answer(keywords.get('choice'),keywords.get('question'))
+            self.check_string.append(keywords.get('choice'));
         elif cont == QuizQuestion:
             self.quizstate.check_answer(keywords.get('choice'),keywords.get('question'))
-            self.frames[QuizQuestion].refresh_question()
+            self.frames[QuizQuestion].refresh_question();
+            self.check_string.append(keywords.get('choice'));
         if keywords.get('endquiz') == 'yes':
             tkMessageBox.showinfo("Your Results",self.quizstate.get_result())
             print self.quizstate.get_result();
+            print self.check_string
+            self.check_string = []
                 
         frame = self.frames[cont]
         frame.tkraise()
@@ -147,8 +153,6 @@ class QuizQuestion(Frame):
         self.current_question = controller.logic_question.get_question();
         self.logic_question = controller.logic_question;
         
-        print(self.current_question)
-        
         #Get quiz question
         self.question_text = StringVar();
         self.question_text.set(self.current_question[0]);
@@ -160,22 +164,20 @@ class QuizQuestion(Frame):
         self.v = StringVar();
         self.v.set('cat')
         
-        self.answers = [StringVar(), StringVar(), StringVar(), StringVar()];
-        self.values = ['','','',''];
-        
         self.ans_vals = [[StringVar(),''] for _ in range(0,4)]
         
         self.lst = [0,1,2,3];
         self.lst = set(itertools.permutations(list(self.lst))).pop();
 
         for x in range(1,5):
-            self.ans_vals[x - 2][0].set(self.current_question[x][0]);
-            self.ans_vals[x-2][1] = self.current_question[x][1];
+            self.ans_vals[x-1][0].set(self.current_question[x][0]);
+            self.ans_vals[x-1][1] = self.current_question[x][1];
             
         self.ans_vals = random.choice(list(itertools.permutations(list(self.ans_vals))));         
         
         for x in self.lst:
             Radiobutton(self, textvariable=self.ans_vals[x][0], variable=self.v,value=self.ans_vals[x][1]).pack(side = 'top')
+            print(self.ans_vals[x][0].get())
             
         quizbutton = Button(self, text="Next Question", 
                             command=lambda:controller.show_frame(QuizQuestion,choice=self.v.get(),question=self.current_question))
@@ -191,9 +193,12 @@ class QuizQuestion(Frame):
         
         self.lst = set(itertools.permutations(list(self.lst))).pop();
         
+        print self.lst
+        
         for x in self.lst:
-            self.ans_vals[x - 2][0].set(self.current_question[x][0]);
-            self.ans_vals[x-2][1] = self.current_question[x][1];  
+            self.ans_vals[x][0].set(self.current_question[x+1][0]);
+            self.ans_vals[x][1] = self.current_question[x+1][1];  
+            print(self.ans_vals[x][0].get())
         
         self.ans_vals = random.choice(list(itertools.permutations(list(self.ans_vals))));  
         
