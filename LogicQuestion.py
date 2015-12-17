@@ -17,11 +17,11 @@ class LogicQuestion(object):
         self._generate_answer()
         self._generate_wrong_answers()
         #print self.wronganswer1,'+',self.wronganswer2,'+',self.wronganswer3
-        QUESTION = [(self.question),
-                    (self.answer,'correct'),
-                    (self.wronganswer1,'no'),
-                    (self.wronganswer2,'bad'),
-                    (self.wronganswer3,'wrong')]
+        QUESTION = [self.question,
+                    [self.answer,'correct'],
+                    [self.wronganswer1,'no'],
+                    [self.wronganswer2,'bad'],
+                    [self.wronganswer3,'wrong']]
                     
         return QUESTION
         

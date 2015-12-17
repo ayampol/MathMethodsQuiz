@@ -22,6 +22,7 @@ class FrameWarden(Tk):
         self.frames = {}
         
         self.check_string = [];
+        self.questions_so_far = '';
         
         forms = {1:"If $noun is $adjective1 then it is $adjective2", 2: "$adjective1 implies $adjective2" , 3: "$noun is $adjective1 if it is $adjective2", 4:"If $noun is not $adjective1 then it is not $adjective2", 5: "Not $adjective1 implies not $adjective2", 6: "$noun is $adjective1 if it is $adjective2", 7:"If $noun is $adjective2 then it is $adjective1", 8:"$adjective2 implies $adjective1", 9:"$noun is $adjective2 if it is $adjective1", 10:"If $noun is not $adjective2 then it is not $adjective1", 11:"Not $adjective2 implies not $adjective1", 12:"$noun is not $adjective2 if it is not $adjective1"}
         nouns = ["Duck", "Cat","Dog","Elephant", "Pidgeon", "Mouse", "Lion", "Person", "Bearcat", "Horse", "Pig", "Scorpion", "Ant", "Jaguar", "Giraffe"]
@@ -30,7 +31,7 @@ class FrameWarden(Tk):
 
         self.logic_question = LogicQuestion(nouns,adjectives,types,forms)        
         
-        for F in (StartPage, InfoPage, QuizPage, GamePage, QuizQuestion):
+        for F in (StartPage, InfoPage, QuizPage, GamePage, QuizQuestion, ResultsPage):
 
             frame = F(self.tainercon, self)
             self.frames[F] = frame
@@ -41,20 +42,36 @@ class FrameWarden(Tk):
     def show_frame(self, cont, *arguments, **keywords):
         if cont == QuizPage:
             self.quizstate = QuizState();
-            self.quizstate.check_answer(keywords.get('choice'),keywords.get('question'))
-            self.check_string.append(keywords.get('choice'));
+            
         elif cont == QuizQuestion:
             self.quizstate.check_answer(keywords.get('choice'),keywords.get('question'))
+            self._save_question(keywords.get('question'))
             self.frames[QuizQuestion].refresh_question();
             self.check_string.append(keywords.get('choice'));
-        if keywords.get('endquiz') == 'yes':
+            
+        elif cont == ResultsPage:
             tkMessageBox.showinfo("Your Results",self.quizstate.get_result())
-            print self.quizstate.get_result();
-            print self.check_string
-            self.check_string = []
+            self.frames[ResultsPage]._update_fields(self.questions_so_far,self.quizstate.get_result())
                 
         frame = self.frames[cont]
         frame.tkraise()
+        
+    def _save_question(self,question_blob):
+        for i in question_blob:
+            #print str(i) + ' <--- That\'s an i!!'
+            if i != None:
+                if len(i) == 2:
+                    if str(i[1]) == 'correct':
+                        curr_str = '\t' + str(i[0]) + ' <== Right answer!'+ '\n'
+                    elif 'bad' == str(i[1]):
+                        curr_str = 'You chose ~> ' + str(i[0]) + '\n'
+                    else:
+                        curr_str = '\t' + str(i[0]) + '\n'
+                else:
+                    curr_str = str(i) + '\n'
+                self.questions_so_far = self.questions_so_far + curr_str;
+        print self.questions_so_far
+            
         
 class StartPage(Frame):
 
@@ -122,7 +139,7 @@ class QuizPage( Frame):
         label.pack(pady=10,padx=10)
         #self._generate_question()
         self.current_question = controller.logic_question.get_question();
-        
+        print self.current_question
         #Get quiz question
         question_label = Label(self, text=self.current_question[0], font=LARGE_FONT);
         question_label.pack(pady=50,padx=50);
@@ -177,14 +194,13 @@ class QuizQuestion(Frame):
         
         for x in self.lst:
             Radiobutton(self, textvariable=self.ans_vals[x][0], variable=self.v,value=self.ans_vals[x][1]).pack(side = 'top')
-            print(self.ans_vals[x][0].get())
             
         quizbutton = Button(self, text="Next Question", 
                             command=lambda:controller.show_frame(QuizQuestion,choice=self.v.get(),question=self.current_question))
         quizbutton.pack(side = TOP)
         
         endbutton = Button(self,text="End Quiz",
-                            command=lambda:controller.show_frame(StartPage,endquiz='yes'))
+                            command=lambda:controller.show_frame(ResultsPage,endquiz='yes'))
         endbutton.pack();
         
     def refresh_question(self):
@@ -193,12 +209,9 @@ class QuizQuestion(Frame):
         
         self.lst = set(itertools.permutations(list(self.lst))).pop();
         
-        print self.lst
-        
         for x in self.lst:
             self.ans_vals[x][0].set(self.current_question[x+1][0]);
             self.ans_vals[x][1] = self.current_question[x+1][1];  
-            print(self.ans_vals[x][0].get())
         
         self.ans_vals = random.choice(list(itertools.permutations(list(self.ans_vals))));  
         
@@ -216,6 +229,35 @@ class GamePage(Frame):
         
         backbutton = Button(self,text='Back to Start');
         backbutton.pack(side = BOTTOM)
+        
+class ResultsPage(Frame):
+    def __init__(self,parent,controller):
+        Frame.__init__(self,parent)
+        self.results_label_text = StringVar();
+        S = Scrollbar(self)
+        self.T = Text(self, height=7, width=70)
+        self.result_label = Label(self,textvariable=self.results_label_text,font=LARGE_FONT)
+        
+        self.result_label.pack(side='right')
+        self.T.pack(side='left',fill=Y)
+        S.pack(side='left',fill=Y)
+        
+        S.config(command=self.T.yview)
+        self.T.config(yscrollcommand=S.set)
+        
+        self.T.config(state=DISABLED)
+                
+        homebutton = Button(self,text='Back to Start',
+                            command=lambda: controller.show_frame(StartPage))
+        homebutton.pack(side='bottom');
+        
+    def _update_fields(self,question_summary,result):
+        self.results_label_text.set(result);
+        self.T.config(state=NORMAL);
+        self.T.insert(END,question_summary);
+        self.T.config(state=DISABLED)
+
+        
         
 app = FrameWarden();
 app.mainloop();      

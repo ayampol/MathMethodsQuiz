@@ -2,13 +2,28 @@ class QuizState(object):
     def __init__(self):
         self.type = type;
         self.score = {'correct': 0, 'wrong': 0};
-        self.total_questions = -1;
-        self.questions_so_far = [];
+        self.total_questions = 0;
+        self.questions_so_far = '';
         self.answers_so_far = [];
 
     def check_answer(self,choice,question_blob):
         self._update_question_total();
-        self.questions_so_far.append(question_blob);
+        curr_str = '';
+        
+        for i in question_blob:
+            print str(i) + ' <--- That\'s an i!!'
+            if i != None:
+                if len(i) == 2:
+                    if str(i[1]) == 'correct':
+                        curr_str = '\t' + str(i[0]) + ' <== Right answer!'+ '\n'
+                    elif choice == str(i[1]):
+                        curr_str = 'You chose ~>' + str(i[0]) + '\n'
+                    else:
+                        curr_str = '\t' + str(i[0]) + '\n'
+                else:
+                    curr_str = str(i) + '\n'
+                self.questions_so_far = self.questions_so_far + curr_str;
+        
         if (choice == 'correct'):
             self._rightanswer();
         else:
