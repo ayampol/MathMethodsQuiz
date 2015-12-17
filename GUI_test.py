@@ -11,7 +11,7 @@ import tkMessageBox
 
 LARGE_FONT = ("courier new", 12)
 SMALL_FONT = ("Verdana",10)
-WRAP_LENGTH = 400;
+WRAP_LENGTH = 600;
 
 class FrameWarden(Tk):
 
@@ -33,7 +33,7 @@ class FrameWarden(Tk):
         
         forms = {1:"If $noun is $adjective1 then it is $adjective2", 2: "$adjective1 implies $adjective2" , 3: "$noun is $adjective1 if it is $adjective2", 4:"If $noun is not $adjective1 then it is not $adjective2", 5: "Not $adjective1 implies not $adjective2", 6: "$noun is $adjective1 if it is $adjective2", 7:"If $noun is $adjective2 then it is $adjective1", 8:"$adjective2 implies $adjective1", 9:"$noun is $adjective2 if it is $adjective1", 10:"If $noun is not $adjective2 then it is not $adjective1", 11:"Not $adjective2 implies not $adjective1", 12:"$noun is not $adjective2 if it is not $adjective1"}
         nouns = ["Duck", "Cat","Dog","Elephant", "Pidgeon", "Mouse", "Lion", "Person", "Bearcat", "Horse", "Pig", "Scorpion", "Ant", "Jaguar", "Giraffe"]
-        adjectives = ["Red","Sunny","Tepid","Green","Angry","Cautious","Raining", "Skiing", "Jumping", "Hiking", "Swimming", "Racing"]
+        adjectives = open("adjectives.txt").read().splitlines()
         types = {1:"inverse", 2: "converse", 3:"contrapositive"}
         
         d_questions = {1:"If there is $n1 video game players interested in playing a game, where there are only $r1 consoles, at least how many players must share a console?", 2: " How many ways can yo deal 5 cards to each of 2 players from a standard deck of 52 cards?", 3:"What is the minimum amount of people that must be in a room before you can guarantee at least 2 of them have the same favorite day of the week?", 4: "How many functions exist from a set of $r1 elements to a set with $n1 elements?", 5: "How many onto functions exist from a set of $r1 elements to a set of $n1 elements?", 6: "How many funtions from a set of $r1 elements to a set of $n1 elements are invertible?"}
@@ -186,27 +186,25 @@ class InfoPage(Frame):
         quiz_header = Label(self,text="Quiz Mode",font=LARGE_FONT)
         quiz_header.pack(fill=X);
         
-        quiz_info = Label(self,text="Starts a quiz, which consists of 10 questions from 4 categories\
+        quiz_info = Label(self,text="\tStarts a quiz, which consists of 10 questions from 4 categories\
                                         \n Results are shown at the end of 10 questions.",justify='center');
         quiz_info.pack(fill=X);
         
         game_header = Label(self,text="Game Mode",font=LARGE_FONT)
         game_header.pack(fill=X);
         
-        game_info = Label(self,text="Starts a game, which is a quiz with questions from random categories.\
+        game_info = Label(self,text="\tStarts a game, which is a quiz with questions from random categories.\
                                         \n The game ends when you answer incorrectly 3 times.",justify='center');
         game_info.pack(fill=X);
         
         
         
         
-        button1 =  Button(self, text="Back to Home",
+        home_button =  Button(self, text="Back to Home",
                             command=lambda: controller.show_frame(StartPage))
-        button1.pack()
+        home_button.pack(side = 'bottom')
 
-        button2 = Button(self, text="Take a quiz!",
-                            command=lambda: controller.show_frame(QuizPage))
-        button2.pack()
+
 
 
 class QuizPage( Frame):
