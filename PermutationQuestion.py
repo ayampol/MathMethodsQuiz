@@ -13,15 +13,6 @@ class PermutationQuestion(object):
 	self.chosen_var_r = chr(random.randint(0,6)+48)
 
     def get_question(self):
-        QUESTION = [(self._generate_question()),
-                    (self._generate_answer(),'correct'),
-		    (self.generate_wrong_answer(),
-                    ('wrong answer','no'),
-                    ('wrong answer','bad'),
-                    ('wrong answer','wrong')]
-        return QUESTION
-        
-    def get_question(self):
         self._generate_answer()
         self._generate_wrong_answers()
         
@@ -30,6 +21,7 @@ class PermutationQuestion(object):
                     (self.wronganswer1,'no'),
                     (self.wronganswer2,'bad'),
                     (self.wronganswer2,'wrong')]
+                    
         return QUESTION
         
     def _generate_question(self):
@@ -43,11 +35,8 @@ class PermutationQuestion(object):
         
     def _generate_answer(self):
 	self.answer = self.q_answer[self.chosen_type]
-	self.answer= self.answer.replace('$n1', self.chosen_var_n)
-	self.answer= self.answer.replace('$n2', self.chosen_var_n)
-	self.answer= self.answer.replace('$n3', self.chosen_var_n)
-	self.answer= self.answer.replace('$r1', self.chosen_var_r)
-	self.answer= self.answer.replace('$r2', self.chosen_var_r)
+	self.answer= self.answer.replace('$n', self.chosen_var_n)
+	self.answer= self.answer.replace('$r', self.chosen_var_r)
 	return self.answer
 
     def _generate_wrong_answers(self):
@@ -64,15 +53,21 @@ class PermutationQuestion(object):
 		self.wronganswer3 = self.q_answer[i];
 		if self.wronganswer3 != self.answer and self.wronganswer3 != self.wronganswer1 and self.wronganswer3 != self.wronganswer2:
 			break
+	for i in vars(self):
+            if 'wronganswer' in i:
+                x = getattr(self,i)
+                setattr(self, i, x.replace('$n',self.chosen_var_n[-1]).replace('$r',self.chosen_var_r[-1]))      
+	
 	return self.wronganswer1, self.wronganswer2, self.wronganswer3
 
 # Normal, inverse, converse, contrapositive
 questions = {1:"How many terms are in the expansion of (a+b+c+d)*(a+b+c+e)*(x,y,z)?", 2:"How many unique binary strings can be made of length $n", 3: "What is the number of ways $r students can be seated in a class with $n seats?", 4: "What is the  number of ways a bag of $n+2 donuts can be formed with $r types of donuts?", 5: "What is the number of patterns that can be formed by stacking $n wooden blocks if there are $r types of blocks?", 6: "How many ways can $n adults and $r children are to be lined up such that no 2 children are standing next to one another. In how many ways can this be done?", 7: "How many $n letter strings can be formed from the english alphabet", 8: "How many ways can the letters MISSISSIPPI be arranged?"}
 
-answer = {1:"12",2:"2^$n1",3:"C($n1,$r1)",4:"P($n1+$r1+1!,$r2-1)",5:"C($n1+$r1-1, $r2-1)",6:"P($n1,$n2) * P($n3+1,$r1)", 7: "26^$n1", 8: "11! / (4!*2!*4!)"}
+answer = {1:"12",2:"2^$n",3:"C($n,$r)",4:"P($n+$r+1!,$r-1)",5:"C($n+$r-1, $r-1)",6:"P($n,$n) * P($n+1,$r)", 7: "26^$n", 8: "11! / (4!*2!*4!)"}
 
 types = {1:"inverse", 2: "converse", 3:"contrapositive"}
 
 PermutationQuestion = PermutationQuestion(answer, questions)
 print PermutationQuestion._generate_question()
 print PermutationQuestion._generate_answer()
+print PermutationQuestion.get_question()

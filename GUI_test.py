@@ -1,11 +1,13 @@
 from Tkinter import *
+from DistQuestion import DistQuestion
 from QuizState import QuizState
 from LogicQuestion import LogicQuestion
+
 import itertools
 import random
 import tkMessageBox
 
-LARGE_FONT = ("Consolas", 12)
+LARGE_FONT = ("courier new", 12)
 
 class FrameWarden(Tk):
 
@@ -23,13 +25,18 @@ class FrameWarden(Tk):
         
         self.check_string = [];
         self.questions_so_far = '';
+        self.seq_num = 0;
         
         forms = {1:"If $noun is $adjective1 then it is $adjective2", 2: "$adjective1 implies $adjective2" , 3: "$noun is $adjective1 if it is $adjective2", 4:"If $noun is not $adjective1 then it is not $adjective2", 5: "Not $adjective1 implies not $adjective2", 6: "$noun is $adjective1 if it is $adjective2", 7:"If $noun is $adjective2 then it is $adjective1", 8:"$adjective2 implies $adjective1", 9:"$noun is $adjective2 if it is $adjective1", 10:"If $noun is not $adjective2 then it is not $adjective1", 11:"Not $adjective2 implies not $adjective1", 12:"$noun is not $adjective2 if it is not $adjective1"}
         nouns = ["Duck", "Cat","Dog","Elephant", "Pidgeon", "Mouse", "Lion", "Person", "Bearcat", "Horse", "Pig", "Scorpion", "Ant", "Jaguar", "Giraffe"]
         adjectives = ["Red","Sunny","Tepid","Green","Angry","Cautious","Raining", "Skiing", "Jumping", "Hiking", "Swimming", "Racing"]
         types = {1:"inverse", 2: "converse", 3:"contrapositive"}
+        
+        questions = {1:"If there is $n1 video game players interested in playing a game, where there are only $r1 consoles, at least how many players must share a console?", 2: " How many ways can yo deal 5 cards to each of 2 players from a standard deck of 52 cards?", 3:"What is the minimum amount of people that must be in a room before you can guarantee at least 2 of them have the same favorite day of the week?", 4: "How many functions exist from a set of $r1 elements to a set with $n1 elements?", 5: "How many onto functions exist from a set of $r1 elements to a set of $n1 elements?", 6: "How many funtions from a set of $r1 elements to a set of $n1 elements are invertible?"}
+        answer = {1:"$n1",2:"C(52,5)*C(47,5)",3:"8",4:"($n1)^$r1",5:"S($r1,$n1)*$n2!",6:"$r1!",7:"$r1"}
 
-        self.logic_question = LogicQuestion(nouns,adjectives,types,forms)        
+        self.logic_question = LogicQuestion(nouns,adjectives,types,forms)
+        self.dist_question = DistQuestion(answer,questions)        
         
         for F in (StartPage, InfoPage, QuizPage, GamePage, QuizQuestion, ResultsPage):
 
@@ -42,12 +49,19 @@ class FrameWarden(Tk):
     def show_frame(self, cont, *arguments, **keywords):
         if cont == QuizPage:
             self.quizstate = QuizState();
+            self.questions_so_far = '';
+            self.seq_num = 1;
             
         elif cont == QuizQuestion:
             self.quizstate.check_answer(keywords.get('choice'),keywords.get('question'))
             self._save_question(keywords.get('question'))
             self.frames[QuizQuestion].refresh_question();
             self.check_string.append(keywords.get('choice'));
+            self.seq_num = self.seq_num + 1;
+            if self.seq_num < 3:
+                self.frames[QuizQuestion].logic_question = self.logic_question;
+            else:
+                self.frames[QuizQuestion].logic_question = self.dist_question;
             
         elif cont == ResultsPage:
             tkMessageBox.showinfo("Your Results",self.quizstate.get_result())
@@ -58,13 +72,12 @@ class FrameWarden(Tk):
         
     def _save_question(self,question_blob):
         for i in question_blob:
-            #print str(i) + ' <--- That\'s an i!!'
             if i != None:
                 if len(i) == 2:
                     if str(i[1]) == 'correct':
-                        curr_str = '\t' + str(i[0]) + ' <== Right answer!'+ '\n'
+                        curr_str = '\t' + str(i[0]) + ' <== Correct'+ '\n'
                     elif 'bad' == str(i[1]):
-                        curr_str = 'You chose ~> ' + str(i[0]) + '\n'
+                        curr_str = '\t| You chose ~> ' + str(i[0]) + '\n'
                     else:
                         curr_str = '\t' + str(i[0]) + '\n'
                 else:
@@ -254,6 +267,7 @@ class ResultsPage(Frame):
     def _update_fields(self,question_summary,result):
         self.results_label_text.set(result);
         self.T.config(state=NORMAL);
+        self.T.delete(1.0,END);
         self.T.insert(END,question_summary);
         self.T.config(state=DISABLED)
 

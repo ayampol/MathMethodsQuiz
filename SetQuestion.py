@@ -14,12 +14,15 @@ class SetQuestion(object):
 	self.q_answer = [set.intersection(self.q_A,self.q_B), set.difference(self.q_B,self.q_A), set.union(self.q_A,self.q_B), set.intersection(self.q_B,self.q_C), set.difference(self.q_B,self.q_C), set.union(self.q_B,self.q_C), set.union(self.q_A,self.q_B,self.q_C), len(self.q_C)]
 
     def get_question(self):
+        self._generate_answer()
+        self._generate_wrong_answers()
+        
         QUESTION = [(self._generate_question()),
-                    (self._generate_answer(),'correct'),
-		    (self._generate_wrong_answers()),
-                    ('wrong answer','no'),
-                    ('wrong answer','bad'),
-                    ('wrong answer','wrong')]
+                    (self.answer,'correct'),
+                    (self.wronganswer1,'no'),
+                    (self.wronganswer2,'bad'),
+                    (self.wronganswer2,'wrong')]
+                    
         return QUESTION
         
     def _generate_question(self):
@@ -54,5 +57,6 @@ q_B = [88,'TV',1,3,87,'Giraffe',11,'Car','Elephant','Wizard']
 q_C = [2,'Cat',20,3,4,'Pants','Key','Car','Elephant','Wizard', 'Aadvark']
 
 SetQuestion = SetQuestion(questions,q_A,q_B,q_C)
-print SetQuestion._generate_question()
-print SetQuestion._generate_answer()
+#print SetQuestion._generate_question()
+#print SetQuestion._generate_answer()
+print SetQuestion.get_question()

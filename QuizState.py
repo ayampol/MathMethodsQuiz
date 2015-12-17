@@ -8,21 +8,21 @@ class QuizState(object):
 
     def check_answer(self,choice,question_blob):
         self._update_question_total();
-        curr_str = '';
-        
-        for i in question_blob:
-            print str(i) + ' <--- That\'s an i!!'
-            if i != None:
-                if len(i) == 2:
-                    if str(i[1]) == 'correct':
-                        curr_str = '\t' + str(i[0]) + ' <== Right answer!'+ '\n'
-                    elif choice == str(i[1]):
-                        curr_str = 'You chose ~>' + str(i[0]) + '\n'
-                    else:
-                        curr_str = '\t' + str(i[0]) + '\n'
-                else:
-                    curr_str = str(i) + '\n'
-                self.questions_so_far = self.questions_so_far + curr_str;
+        #curr_str = '';
+        #
+        #for i in question_blob:
+        #    print str(i) + ' <--- That\'s an i!!'
+        #    if i != None:
+        #        if len(i) == 2:
+        #            if str(i[1]) == 'correct':
+        #                curr_str = '\t' + str(i[0]) + ' <== Right answer!'+ '\n'
+        #            elif choice == str(i[1]):
+        #                curr_str = 'You chose ~>' + str(i[0]) + '\n'
+        #            else:
+        #                curr_str = '\t' + str(i[0]) + '\n'
+        #        else:
+        #            curr_str = str(i) + '\n'
+        #        self.questions_so_far = self.questions_so_far + curr_str;
         
         if (choice == 'correct'):
             self._rightanswer();

@@ -1,4 +1,4 @@
-from Tkinter import *
+#from Tkinter import *
 import random
 
 class LogicQuestion(object):
