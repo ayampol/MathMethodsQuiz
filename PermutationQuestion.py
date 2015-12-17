@@ -66,8 +66,8 @@ questions = {1:"How many terms are in the expansion of (a+b+c+d)*(a+b+c+e)*(x,y,
 answer = {1:"12",2:"2^$n",3:"C($n,$r)",4:"P($n+$r+1!,$r-1)",5:"C($n+$r-1, $r-1)",6:"P($n,$n) * P($n+1,$r)", 7: "26^$n", 8: "11! / (4!*2!*4!)"}
 
 types = {1:"inverse", 2: "converse", 3:"contrapositive"}
-
-PermutationQuestion = PermutationQuestion(answer, questions)
-print PermutationQuestion._generate_question()
-print PermutationQuestion._generate_answer()
-print PermutationQuestion.get_question()
+#
+#PermutationQuestion = PermutationQuestion(answer, questions)
+#print PermutationQuestion._generate_question()
+#print PermutationQuestion._generate_answer()
+#print PermutationQuestion.get_question()

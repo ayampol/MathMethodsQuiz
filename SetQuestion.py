@@ -56,7 +56,7 @@ q_A = [88,'Cat',20,5,4,'Dog',6,99,'Elephant',81,10]
 q_B = [88,'TV',1,3,87,'Giraffe',11,'Car','Elephant','Wizard']
 q_C = [2,'Cat',20,3,4,'Pants','Key','Car','Elephant','Wizard', 'Aadvark']
 
-SetQuestion = SetQuestion(questions,q_A,q_B,q_C)
-#print SetQuestion._generate_question()
-#print SetQuestion._generate_answer()
-print SetQuestion.get_question()
+#SetQuestion = SetQuestion(questions,q_A,q_B,q_C)
+##print SetQuestion._generate_question()
+##print SetQuestion._generate_answer()
+#print SetQuestion.get_question()
