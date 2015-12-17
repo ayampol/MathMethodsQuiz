@@ -55,7 +55,7 @@ class FrameWarden(Tk):
         
         self.questions = [self.logic_question,self.dist_question,self.set_question,self.permut_question]
         
-        for F in (StartPage, InfoPage, QuizPage, QuizQuestion,GamePage, GameQuestion, ResultsPage):
+        for F in (StartPage, InfoPage, QuizPage, QuizQuestion,EndlessPage, EndlessQuestion,GamePage,GameQuestion, ResultsPage):
 
             frame = F(self.tainercon, self)
             self.frames[F] = frame
@@ -65,8 +65,7 @@ class FrameWarden(Tk):
 
     def show_frame(self, cont, *arguments, **keywords):
         if cont == QuizPage:
-            self.quizstate = QuizState();
-            self.questions_so_far = '';
+            self.reset_quiz_state();
             self.seq_num = 0;
             
         elif cont == QuizQuestion:
@@ -86,14 +85,23 @@ class FrameWarden(Tk):
             elif self.seq_num == 10:
                 cont = ResultsPage;
                 
+        if cont == EndlessPage:
+            self.reset_quiz_state();
+        elif cont == EndlessQuestion:
+            self.quizstate.check_answer(keywords.get('choice'),keywords.get('question'))
+            self._save_question(keywords.get('question'))
+            self.frames[EndlessQuestion].logic_question = random.choice(self.questions)
+            self.frames[EndlessQuestion].refresh_question();
+            
         if cont == GamePage:
-            self.quizstate = QuizState();
-            self.questions_so_far = '';
+            self.reset_quiz_state();
         elif cont == GameQuestion:
             self.quizstate.check_answer(keywords.get('choice'),keywords.get('question'))
             self._save_question(keywords.get('question'))
             self.frames[GameQuestion].logic_question = random.choice(self.questions)
             self.frames[GameQuestion].refresh_question();
+            if self.quizstate.score['wrong'] == 3:
+                cont = ResultsPage
             
             
         if cont == ResultsPage:
@@ -117,7 +125,10 @@ class FrameWarden(Tk):
                     curr_str = str(i) + '\n'
                 self.questions_so_far = self.questions_so_far + curr_str;
         print self.questions_so_far
-            
+        
+    def reset_quiz_state(self):
+        self.quizstate = QuizState();
+        self.questions_so_far = '';
         
 class StartPage(Frame):
 
@@ -145,9 +156,14 @@ class StartPage(Frame):
                             command=lambda: controller.show_frame(QuizPage))
         button2.pack()
 
-        button3 =  Button(self, text="Play A Game",
-                            command=lambda: controller.show_frame(GamePage))
+        button3 =  Button(self, text="Endless Mode",
+                            command=lambda: controller.show_frame(EndlessPage))
         button3.pack()
+        
+        
+        button5 =  Button(self, text="Play a game",
+                            command=lambda: controller.show_frame(GamePage))
+        button5.pack()
         
         button4 = Button(self, text="Quit",
                             command=lambda: controller.destroy())
@@ -167,6 +183,22 @@ class InfoPage(Frame):
         label = Label(self, text="Info", fg='red',font=LARGE_FONT)
         label.pack(pady=10,padx=10)
         
+        quiz_header = Label(self,text="Quiz Mode",font=LARGE_FONT)
+        quiz_header.pack(fill=X);
+        
+        quiz_info = Label(self,text="Starts a quiz, which consists of 10 questions from 4 categories\
+                                        \n Results are shown at the end of 10 questions.",justify='center');
+        quiz_info.pack(fill=X);
+        
+        game_header = Label(self,text="Game Mode",font=LARGE_FONT)
+        game_header.pack(fill=X);
+        
+        game_info = Label(self,text="Starts a game, which is a quiz with questions from random categories.\
+                                        \n The game ends when you answer incorrectly 3 times.",justify='center');
+        game_info.pack(fill=X);
+        
+        
+        
         
         button1 =  Button(self, text="Back to Home",
                             command=lambda: controller.show_frame(StartPage))
@@ -179,7 +211,7 @@ class InfoPage(Frame):
 
 class QuizPage( Frame):
 
-    def __init__(self, parent, controller):
+    def __init__(self, parent, controller, *arguments, **keywords):
         Frame.__init__(self, parent)
         label =  Label(self, text="Start Of Quiz", font=LARGE_FONT)
         label.pack(pady=10,padx=10)
@@ -197,8 +229,14 @@ class QuizPage( Frame):
         for x in range(1,5):
             Radiobutton(self, text=self.current_question[x][0], variable=v, value=self.current_question[x][1], font=SMALL_FONT).pack(side='top')
         
-        quizbutton = Button(self, text="Next Question", 
+        if (keywords.get('type') == 'game'):
+            quizbutton = Button(self, text="Continue Game", 
+                            command=lambda: controller.show_frame(GameQuestion,choice=v.get(),question=self.current_question))
+        else:
+            quizbutton = Button(self, text="Next Question", 
                             command=lambda: controller.show_frame(QuizQuestion,choice=v.get(),question=self.current_question))
+        
+                            
         quizbutton.pack(side = TOP)
         
         button1 =  Button(self, text="Back to Home",
@@ -210,7 +248,7 @@ class QuizPage( Frame):
         button2.pack(side = BOTTOM)
         
 class QuizQuestion(Frame):
-    def __init__(self,parent,controller):
+    def __init__(self,parent,controller, *arguments, **keywords):
         Frame.__init__(self,parent)
         
         self.current_question = controller.logic_question.get_question();
@@ -240,14 +278,15 @@ class QuizQuestion(Frame):
         
         for x in self.lst:
             Radiobutton(self, textvariable=self.ans_vals[x][0], variable=self.v,value=self.ans_vals[x][1], font=SMALL_FONT).pack(side = 'top')
+        
             
-        quizbutton = Button(self, text="Next Question", 
+        if keywords.get('type')=='game': 
+            quizbutton = Button(self, text="Continue", 
+                            command=lambda:controller.show_frame(GameQuestion,choice=self.v.get(),question=self.current_question))
+        else:                       
+            quizbutton = Button(self, text="Next Question", 
                             command=lambda:controller.show_frame(QuizQuestion,choice=self.v.get(),question=self.current_question))
         quizbutton.pack(side = TOP)
-        
-        endbutton = Button(self,text="End Quiz",
-                            command=lambda:controller.show_frame(ResultsPage,endquiz='yes'))
-        endbutton.pack();
         
     def refresh_question(self):
         self.current_question = self.logic_question.get_question(); 
@@ -264,10 +303,10 @@ class QuizQuestion(Frame):
         self.v.set('new');
         
         
-class GamePage(Frame):
+class EndlessPage(Frame):
     def __init__(self,parent,controller):
         Frame.__init__(self,parent)
-        label = Label(self,text="Let's play a game.", font=LARGE_FONT)
+        label = Label(self,text="This is endless mode.", font=LARGE_FONT)
         label.pack(pady=10,padx=10)
         
         label.pack(pady=10,padx=10)
@@ -286,7 +325,7 @@ class GamePage(Frame):
             Radiobutton(self, text=self.current_question[x][0], variable=self.v, value=self.current_question[x][1], font=SMALL_FONT).pack(side='top')
         
         playbutton = Button(self,text='Next Question',
-                                    command=lambda:controller.show_frame(GameQuestion,choice=self.v.get(),question=self.current_question))
+                                    command=lambda:controller.show_frame(EndlessQuestion,choice=self.v.get(),question=self.current_question))
         playbutton.pack(side = TOP)
         
         backbutton = Button(self,text='Back to Start',
@@ -294,7 +333,7 @@ class GamePage(Frame):
         backbutton.pack(side = BOTTOM)
         
         
-class GameQuestion(Frame):
+class EndlessQuestion(Frame):
     def __init__(self,parent,controller):
         Frame.__init__(self,parent)
         
@@ -327,10 +366,10 @@ class GameQuestion(Frame):
             Radiobutton(self, textvariable=self.ans_vals[x][0], variable=self.v,value=self.ans_vals[x][1], font=SMALL_FONT).pack(side = 'top')
             
         quizbutton = Button(self, text="Next Question", 
-                            command=lambda:controller.show_frame(GameQuestion,choice=self.v.get(),question=self.current_question))
+                            command=lambda:controller.show_frame(EndlessQuestion,choice=self.v.get(),question=self.current_question))
         quizbutton.pack(side = TOP)
         
-        endbutton = Button(self,text="End Game",
+        endbutton = Button(self,text="Finish",
                             command=lambda:controller.show_frame(ResultsPage,endquiz='yes'))
         endbutton.pack();
         
@@ -348,13 +387,69 @@ class GameQuestion(Frame):
         
         self.v.set('new');
         
+class GamePage(QuizPage):
+    def __init__(self,parent,controller):
+        QuizPage.__init__(self,parent,controller,type='game')
+        
+class GameQuestion(QuizQuestion):
+    def __init__(self,parent,controller, *arguments, **keywords):
+        Frame.__init__(self,parent)
+        
+        self.current_question = controller.logic_question.get_question();
+        self.logic_question = controller.logic_question;
+        
+        #Get quiz question
+        self.question_text = StringVar();
+        self.question_text.set(self.current_question[0]);
+        
+        question_label = Label(self, textvariable=self.question_text, font=LARGE_FONT, wraplength=WRAP_LENGTH, anchor=W,justify='left');
+        question_label.pack(pady=50,padx=50);
+        
+        #Get quiz answers
+        self.v = StringVar();
+        self.v.set('cat')
+        
+        self.ans_vals = [[StringVar(),''] for _ in range(0,4)]
+        
+        self.lst = [0,1,2,3];
+        self.lst = set(itertools.permutations(list(self.lst))).pop();
+
+        for x in range(1,5):
+            self.ans_vals[x-1][0].set(self.current_question[x][0]);
+            self.ans_vals[x-1][1] = self.current_question[x][1];
+            
+        self.ans_vals = random.choice(list(itertools.permutations(list(self.ans_vals))));         
+        
+        for x in self.lst:
+            Radiobutton(self, textvariable=self.ans_vals[x][0], variable=self.v,value=self.ans_vals[x][1], font=SMALL_FONT).pack(side = 'top')
+
+        quizbutton = Button(self, text="Continue", 
+                            command=lambda:controller.show_frame(GameQuestion,choice=self.v.get(),question=self.current_question))
+       
+        quizbutton.pack(side = TOP)
+        
+    def refresh_question(self):
+        self.current_question = self.logic_question.get_question(); 
+        self.question_text.set(self.current_question[0]);
+        
+        self.lst = set(itertools.permutations(list(self.lst))).pop();
+        
+        for x in self.lst:
+            self.ans_vals[x][0].set(self.current_question[x+1][0]);
+            self.ans_vals[x][1] = self.current_question[x+1][1];  
+        
+        self.ans_vals = random.choice(list(itertools.permutations(list(self.ans_vals))));  
+        
+        self.v.set('new');
+        
+        
 class ResultsPage(Frame):
     def __init__(self,parent,controller):
         Frame.__init__(self,parent)
         self.results_label_text = StringVar();
         S = Scrollbar(self)
         self.T = Text(self, height=7, width=70)
-        self.result_label = Label(self,textvariable=self.results_label_text,font=SMALL_FONT, wraplength=WRAP_LENGTH, anchor=W,justify='left');
+        self.result_label = Label(self,textvariable=self.results_label_text,font=SMALL_FONT, wraplength=WRAP_LENGTH, anchor=NW,justify='left');
         self.result_label.pack(side='right')
         self.T.pack(side='left',fill=Y)
         S.pack(side='left',fill=Y)
