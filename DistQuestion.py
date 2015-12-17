@@ -18,9 +18,9 @@ class DistQuestion(object):
         self._generate_wrong_answers()
         
         QUESTION = [(self.q_chosen_question),
+                    (self.wronganswer2,'bad'),
                     (self.answer,'correct'),
                     (self.wronganswer1,'no'),
-                    (self.wronganswer2,'bad'),
                     (self.wronganswer2,'wrong')]
 
         return QUESTION
@@ -66,7 +66,7 @@ class DistQuestion(object):
 	return self.wronganswer1, self.wronganswer2, self.wronganswer3
 
 # Normal, inverse, converse, contrapositive
-questions = {1:"If there is $n1 video game players interested in playing a game, where there are only $r1 consoles, at least how many players must share a console?", 2: " How many ways can yo deal 5 cards to each of 2 players from a standard deck of 52 cards?", 3:"What is the minimum amount of people that must be in a room before you can guarantee at least 2 of them have the same favorite day of the week?", 4: "How many functions exist from a set of $r1 elements to a set with $n1 elements?", 5: "How many onto functions exist from a set of $r1 elements to a set of $n1 elements?", 6: "How many funtions from a set of $r1 elements to a set of $n1 elements are invertible?"}
+questions = {1:"If there are $n1 video game players interested in playing a game, where there are only $r1 consoles, at least how many players must share a console?", 2: " How many ways can you deal 5 cards to each of 2 players from a standard deck of 52 cards?", 3:"What is the minimum amount of people that must be in a room before you can guarantee at least 2 of them have the same favorite day of the week?", 4: "How many functions exist from a set of $r1 elements to a set with $n1 elements?", 5: "How many onto functions exist from a set of $r1 elements to a set of $n1 elements?", 6: "How many functions from a set of $r1 elements to a set of $n1 elements are invertable?"}
 
 answer = {1:"$n1",2:"C(52,5)*C(47,5)",3:"8",4:"($n1)^$r1",5:"S($r1,$n1)*$n2!",6:"$r1!",7:"$r1"}
 #

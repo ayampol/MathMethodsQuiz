@@ -17,10 +17,10 @@ class PermutationQuestion(object):
         self._generate_wrong_answers()
         
         QUESTION = [(self._generate_question()),
-                    (self.answer,'correct'),
                     (self.wronganswer1,'no'),
                     (self.wronganswer2,'bad'),
-                    (self.wronganswer2,'wrong')]
+                    (self.wronganswer2,'wrong'),
+                    (self.answer,'correct')]
                     
         return QUESTION
         

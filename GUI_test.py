@@ -32,7 +32,8 @@ class FrameWarden(Tk):
         self.seq_num = 0;
         
         forms = {1:"If $noun is $adjective1 then it is $adjective2", 2: "$adjective1 implies $adjective2" , 3: "$noun is $adjective1 if it is $adjective2", 4:"If $noun is not $adjective1 then it is not $adjective2", 5: "Not $adjective1 implies not $adjective2", 6: "$noun is $adjective1 if it is $adjective2", 7:"If $noun is $adjective2 then it is $adjective1", 8:"$adjective2 implies $adjective1", 9:"$noun is $adjective2 if it is $adjective1", 10:"If $noun is not $adjective2 then it is not $adjective1", 11:"Not $adjective2 implies not $adjective1", 12:"$noun is not $adjective2 if it is not $adjective1"}
-        nouns = ["Duck", "Cat","Dog","Elephant", "Pidgeon", "Mouse", "Lion", "Person", "Bearcat", "Horse", "Pig", "Scorpion", "Ant", "Jaguar", "Giraffe"]
+        #nouns = ["Duck", "Cat","Dog","Elephant", "Pidgeon", "Mouse", "Lion", "Person", "Bearcat", "Horse", "Pig", "Scorpion", "Ant", "Jaguar", "Giraffe"]
+        nouns = open("nouns.txt").read().splitlines()
         adjectives = open("adjectives.txt").read().splitlines()
         types = {1:"inverse", 2: "converse", 3:"contrapositive"}
         
@@ -41,8 +42,8 @@ class FrameWarden(Tk):
         
         questions = ["What is the intersection of sets A and B?", "What is the difference between B and A?", "What is the Union of sets A and B?", "What is the intersection of sets B and C", "What is the difference between B and C?", "What is the Union of sets B and C?", "What is the Union of A, B, and C?", "What is the cardinality of set C?"]
 
-        q_A = [88,'Cat',20,5,4,'Dog',6,99,'Elephant',81,10]
-        q_B = [88,'TV',1,3,87,'Giraffe',11,'Car','Elephant','Wizard']
+        q_A = range(0,50)
+        q_B = open("nouns.txt").read().splitlines()
         q_C = [2,'Cat',20,3,4,'Pants','Key','Car','Elephant','Wizard', 'Aadvark']
         
         p_questions = {1:"How many terms are in the expansion of (a+b+c+d)*(a+b+c+e)*(x,y,z)?", 2:"How many unique binary strings can be made of length $n", 3: "What is the number of ways $r students can be seated in a class with $n seats?", 4: "What is the  number of ways a bag of $n+2 donuts can be formed with $r types of donuts?", 5: "What is the number of patterns that can be formed by stacking $n wooden blocks if there are $r types of blocks?", 6: "How many ways can $n adults and $r children are to be lined up such that no 2 children are standing next to one another. In how many ways can this be done?", 7: "How many $n letter strings can be formed from the english alphabet", 8: "How many ways can the letters MISSISSIPPI be arranged?"}
@@ -70,7 +71,7 @@ class FrameWarden(Tk):
             
         elif cont == QuizQuestion:
             self.quizstate.check_answer(keywords.get('choice'),keywords.get('question'))
-            self._save_question(keywords.get('question'))
+            self._save_question(keywords.get('question'),keywords.get('choice'))
             self.frames[QuizQuestion].refresh_question();
             #self.check_string.append(keywords.get('choice'));
             self.seq_num = self.seq_num + 1;
@@ -84,20 +85,22 @@ class FrameWarden(Tk):
                 self.frames[QuizQuestion].logic_question = self.permut_question;
             elif self.seq_num == 10:
                 cont = ResultsPage;
+            print keywords.get('choice')
                 
         if cont == EndlessPage:
             self.reset_quiz_state();
         elif cont == EndlessQuestion:
             self.quizstate.check_answer(keywords.get('choice'),keywords.get('question'))
-            self._save_question(keywords.get('question'))
+            self._save_question(keywords.get('question'),keywords.get('choice'))
             self.frames[EndlessQuestion].logic_question = random.choice(self.questions)
             self.frames[EndlessQuestion].refresh_question();
+            print keywords.get('choice')
             
         if cont == GamePage:
             self.reset_quiz_state();
         elif cont == GameQuestion:
             self.quizstate.check_answer(keywords.get('choice'),keywords.get('question'))
-            self._save_question(keywords.get('question'))
+            self._save_question(keywords.get('question'),keywords.get('choice'))
             self.frames[GameQuestion].logic_question = random.choice(self.questions)
             self.frames[GameQuestion].refresh_question();
             if self.quizstate.score['wrong'] == 3:
@@ -111,20 +114,19 @@ class FrameWarden(Tk):
         frame = self.frames[cont]
         frame.tkraise()
         
-    def _save_question(self,question_blob):
+    def _save_question(self,question_blob,choice):
         for i in question_blob:
             if i != None:
                 if len(i) == 2:
                     if str(i[1]) == 'correct':
                         curr_str = '\t' + str(i[0]) + ' <== Correct'+ '\n'
-                    elif 'bad' == str(i[1]):
+                    elif str(i[1]) == choice:
                         curr_str = '\t| You chose ~> ' + str(i[0]) + '\n'
                     else:
                         curr_str = '\t' + str(i[0]) + '\n'
                 else:
-                    curr_str = str(i) + '\n'
-                self.questions_so_far = self.questions_so_far + curr_str;
-        print self.questions_so_far
+                    curr_str = '\n' + str(i) + '\n'
+                self.questions_so_far = self.questions_so_far + curr_str
         
     def reset_quiz_state(self):
         self.quizstate = QuizState();
@@ -215,7 +217,6 @@ class QuizPage( Frame):
         label.pack(pady=10,padx=10)
         #self._generate_question()
         self.current_question = controller.logic_question.get_question();
-        #print self.current_question
         #Get quiz question
         question_label = Label(self, text=self.current_question[0], font=LARGE_FONT, wraplength=WRAP_LENGTH, anchor=W,justify='left');
         question_label.pack(pady=50,padx=50);
@@ -251,6 +252,7 @@ class QuizQuestion(Frame):
         
         self.current_question = controller.logic_question.get_question();
         self.logic_question = controller.logic_question;
+        self.radio = ['','','','',''];
         
         #Get quiz question
         self.question_text = StringVar();
@@ -266,17 +268,17 @@ class QuizQuestion(Frame):
         self.ans_vals = [[StringVar(),''] for _ in range(0,4)]
         
         self.lst = [0,1,2,3];
-        self.lst = set(itertools.permutations(list(self.lst))).pop();
+        #self.lst = set(itertools.permutations(list(self.lst))).pop();
 
         for x in range(1,5):
             self.ans_vals[x-1][0].set(self.current_question[x][0]);
             self.ans_vals[x-1][1] = self.current_question[x][1];
             
-        self.ans_vals = random.choice(list(itertools.permutations(list(self.ans_vals))));         
+        #self.ans_vals = random.choice(list(itertools.permutations(list(self.ans_vals))));         
         
         for x in self.lst:
-            Radiobutton(self, textvariable=self.ans_vals[x][0], variable=self.v,value=self.ans_vals[x][1], font=SMALL_FONT).pack(side = 'top')
-        
+            self.radio[x] = Radiobutton(self, textvariable=self.ans_vals[x][0], variable=self.v,value=self.ans_vals[x][1], font=SMALL_FONT)
+            self.radio[x].pack(side = 'top')       
             
         if keywords.get('type')=='game': 
             quizbutton = Button(self, text="Continue", 
@@ -290,16 +292,20 @@ class QuizQuestion(Frame):
         self.current_question = self.logic_question.get_question(); 
         self.question_text.set(self.current_question[0]);
         
+        #self.lst = set(itertools.permutations(list(self.lst))).pop();
+        
         self.lst = set(itertools.permutations(list(self.lst))).pop();
         
+        z = 0;
         for x in self.lst:
-            self.ans_vals[x][0].set(self.current_question[x+1][0]);
-            self.ans_vals[x][1] = self.current_question[x+1][1];  
+            self.ans_vals[z][0].set(self.current_question[x+1][0]);
+            self.ans_vals[z][1] = self.current_question[x+1][1];
+            z = z + 1; 
         
-        self.ans_vals = random.choice(list(itertools.permutations(list(self.ans_vals))));  
-        
+        for i in self.lst:
+            self.radio[i].config(value=self.ans_vals[i][1])
+
         self.v.set('new');
-        
         
 class EndlessPage(Frame):
     def __init__(self,parent,controller):
@@ -337,6 +343,7 @@ class EndlessQuestion(Frame):
         
         self.current_question = controller.logic_question.get_question();
         self.logic_question = controller.logic_question;
+        self.radio = ['','','','',''];
         
         #Get quiz question
         self.question_text = StringVar();
@@ -352,16 +359,14 @@ class EndlessQuestion(Frame):
         self.ans_vals = [[StringVar(),''] for _ in range(0,4)]
         
         self.lst = [0,1,2,3];
-        self.lst = set(itertools.permutations(list(self.lst))).pop();
 
         for x in range(1,5):
             self.ans_vals[x-1][0].set(self.current_question[x][0]);
             self.ans_vals[x-1][1] = self.current_question[x][1];
-            
-        self.ans_vals = random.choice(list(itertools.permutations(list(self.ans_vals))));         
-        
+       
         for x in self.lst:
-            Radiobutton(self, textvariable=self.ans_vals[x][0], variable=self.v,value=self.ans_vals[x][1], font=SMALL_FONT).pack(side = 'top')
+            self.radio[x] = Radiobutton(self, textvariable=self.ans_vals[x][0], variable=self.v,value=self.ans_vals[x][1], font=SMALL_FONT)
+            self.radio[x].pack(side = 'top')
             
         quizbutton = Button(self, text="Next Question", 
                             command=lambda:controller.show_frame(EndlessQuestion,choice=self.v.get(),question=self.current_question))
@@ -377,13 +382,17 @@ class EndlessQuestion(Frame):
         
         self.lst = set(itertools.permutations(list(self.lst))).pop();
         
+        z = 0;
         for x in self.lst:
-            self.ans_vals[x][0].set(self.current_question[x+1][0]);
-            self.ans_vals[x][1] = self.current_question[x+1][1];  
+            self.ans_vals[z][0].set(self.current_question[x+1][0]);
+            self.ans_vals[z][1] = self.current_question[x+1][1];
+            z = z + 1; 
         
-        self.ans_vals = random.choice(list(itertools.permutations(list(self.ans_vals))));  
-        
+        for i in self.lst:
+            self.radio[i].config(value=self.ans_vals[i][1])
+
         self.v.set('new');
+        
         
 class GamePage(QuizPage):
     def __init__(self,parent,controller):
@@ -395,6 +404,7 @@ class GameQuestion(QuizQuestion):
         
         self.current_question = controller.logic_question.get_question();
         self.logic_question = controller.logic_question;
+        self.radio = ['','','','',''];
         
         #Get quiz question
         self.question_text = StringVar();
@@ -410,17 +420,18 @@ class GameQuestion(QuizQuestion):
         self.ans_vals = [[StringVar(),''] for _ in range(0,4)]
         
         self.lst = [0,1,2,3];
-        self.lst = set(itertools.permutations(list(self.lst))).pop();
+        #self.lst = set(itertools.permutations(list(self.lst))).pop();
 
         for x in range(1,5):
             self.ans_vals[x-1][0].set(self.current_question[x][0]);
             self.ans_vals[x-1][1] = self.current_question[x][1];
             
-        self.ans_vals = random.choice(list(itertools.permutations(list(self.ans_vals))));         
+        #self.ans_vals = random.choice(list(itertools.permutations(list(self.ans_vals))));         
         
         for x in self.lst:
-            Radiobutton(self, textvariable=self.ans_vals[x][0], variable=self.v,value=self.ans_vals[x][1], font=SMALL_FONT).pack(side = 'top')
-
+            self.radio[x] = Radiobutton(self, textvariable=self.ans_vals[x][0], variable=self.v,value=self.ans_vals[x][1], font=SMALL_FONT)
+            self.radio[x].pack(side = 'top')
+            
         quizbutton = Button(self, text="Continue", 
                             command=lambda:controller.show_frame(GameQuestion,choice=self.v.get(),question=self.current_question))
        
@@ -430,14 +441,17 @@ class GameQuestion(QuizQuestion):
         self.current_question = self.logic_question.get_question(); 
         self.question_text.set(self.current_question[0]);
         
-        self.lst = set(itertools.permutations(list(self.lst))).pop();
+        #self.lst = set(itertools.permutations(list(self.lst))).pop();
         
+        z = 0;
         for x in self.lst:
-            self.ans_vals[x][0].set(self.current_question[x+1][0]);
-            self.ans_vals[x][1] = self.current_question[x+1][1];  
+            self.ans_vals[z][0].set(self.current_question[x+1][0]);
+            self.ans_vals[z][1] = self.current_question[x+1][1];
+            z = z + 1; 
         
-        self.ans_vals = random.choice(list(itertools.permutations(list(self.ans_vals))));  
-        
+        for i in self.lst:
+            self.radio[i].config(value=self.ans_vals[i][1])
+
         self.v.set('new');
         
         
