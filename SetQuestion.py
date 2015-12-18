@@ -72,13 +72,13 @@ class SetQuestion(object):
 	return self.wronganswer1, self.wronganswer2, self.wronganswer3
 
 # Normal, inverse, converse, contrapositive
-questions = ["What is the intersection of sets A and B?", "What is the difference between B and A?", "What is the Union of sets A and B?", "What is the intersection of sets B and C", "What is the difference between B and C?", "What is the Union of sets B and C?", "What is the Union of A, B, and C?", "What is the cardinality of set C?"]
+#questions = ["What is the intersection of sets A and B?", "What is the difference between B and A?", "What is the Union of sets A and B?", "What is the intersection of sets B and C", "What is the difference between B and C?", "What is the Union of sets B and C?", "What is the Union of A, B, and C?", "What is the cardinality of set C?"]
+##
+#q_A = range(0,50);
+#q_B = open("nouns.txt").read().splitlines()
+#q_C = open("adjectives.txt").read().splitlines()
 #
-q_A = range(0,50);
-q_B = open("nouns.txt").read().splitlines()
-q_C = open("adjectives.txt").read().splitlines()
-
-set_quest = SetQuestion(questions,q_A,q_B,q_C)
-set_quest._generate_sets(set_quest.q_A)
-
-print set_quest.get_question()
+#set_quest = SetQuestion(questions,q_A,q_B,q_C)
+#set_quest._generate_sets(set_quest.q_A)
+#
+#print set_quest.get_question()

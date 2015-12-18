@@ -85,7 +85,7 @@ class FrameWarden(Tk):
                 self.frames[QuizQuestion].logic_question = self.permut_question;
             elif self.seq_num == 10:
                 cont = ResultsPage;
-            print keywords.get('choice')
+            #print keywords.get('choice')
                 
         if cont == EndlessPage:
             self.reset_quiz_state();
@@ -94,7 +94,7 @@ class FrameWarden(Tk):
             self._save_question(keywords.get('question'),keywords.get('choice'))
             self.frames[EndlessQuestion].logic_question = random.choice(self.questions)
             self.frames[EndlessQuestion].refresh_question();
-            print keywords.get('choice')
+            #print keywords.get('choice')
             
         if cont == GamePage:
             self.reset_quiz_state();
